@@ -1,0 +1,27 @@
+import requests
+
+def fetch_rate(base, target):
+    try:
+        res = requests.get(f"https://api.exchangerate-api.com/v4/latest/{base}")
+        res.raise_for_status()
+        return res.json().get("rates", {}).get(target)
+    except requests.RequestException:
+        return None
+
+def convert():
+    base = input("From currency (e.g. USD): ").upper()
+    target = input("To currency (e.g. EUR): ").upper()
+    try:
+        amount = float(input(f"Amount in {base}: "))
+    except ValueError:
+        print("❌ Invalid amount")
+        return
+
+    rate = fetch_rate(base, target)
+    if rate:
+        print(f"{amount} {base} = {amount * rate:.2f} {target}")
+    else:
+        print("❌ Conversion failed. Check currency codes or connection.")
+
+if __name__ == "__main__":
+    convert()
